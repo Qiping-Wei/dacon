@@ -1,5 +1,5 @@
-from dacon.models.id_name import id_name
-from dacon.models.parameter import ParameterInfo
+from daconx.models.id_name import id_name
+from daconx.models.parameter import ParameterInfo
 
 
 class EventInfo():

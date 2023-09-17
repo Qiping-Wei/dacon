@@ -1,5 +1,5 @@
-from dacon.config import result_extraction_symbols
-from dacon.utils import is_assignment_operator, is_in_given_list
+from daconx.config import result_extraction_symbols
+from daconx.utils import is_assignment_operator, is_in_given_list
 
 def collect_local_variable_general(items:list):
     function_calls=[]

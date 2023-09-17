@@ -1,9 +1,9 @@
 
-from dacon.models.event import EventInfo
-from dacon.models.function import FunctionInfo
-from dacon.models.modifier import ModifierInfo
-from dacon.models.state_variable import StateVariableInfo
-from dacon.utils import dump_to_json
+from daconx.models.event import EventInfo
+from daconx.models.function import FunctionInfo
+from daconx.models.modifier import ModifierInfo
+from daconx.models.state_variable import StateVariableInfo
+from daconx.utils import dump_to_json
 
 
 def collect_state_variable_data(contract_record:str,sv_code_dict:dict):

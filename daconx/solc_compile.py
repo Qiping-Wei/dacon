@@ -2,7 +2,7 @@ import solcast
 import solcx
 from solcx import compile_standard
 
-from dacon.utils import read_a_file
+from daconx.utils import read_a_file
 
 """
 Assume that all related libraries or contracts are in a single file.

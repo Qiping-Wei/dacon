@@ -1,7 +1,7 @@
 import logging
 
-from dacon.config import color_prefix
-from dacon.utils import read_a_file
+from daconx.config import color_prefix
+from daconx.utils import read_a_file
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)

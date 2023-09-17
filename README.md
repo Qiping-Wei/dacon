@@ -1,5 +1,5 @@
 ## Dacon ##
-The name of Dacon comes from **Da**ta of smart **con**tract. It is designed to collect the data of Solidity smart contract for static analysis. Essentially, it can get data by traversing the AST nodes of a smart contract. 
+It is designed to collect the data of Solidity smart contract for static analysis. Essentially, it can get data by traversing the AST nodes of a smart contract. 
 
 ### Contract Level Data ###
 ```
@@ -71,7 +71,7 @@ Note that since the root AST node of a contract is given, you can get other deta
 
 ### Installation ###
 ```
-pip install dacon
+pip install daconx
 ```
 
 ### Useage ###

@@ -1,8 +1,8 @@
 
-from dacon.models.event import EventInfo
-from dacon.models.function import FunctionInfo
-from dacon.models.modifier import ModifierInfo
-from dacon.models.state_variable import StateVariableInfo
+from daconx.models.event import EventInfo
+from daconx.models.function import FunctionInfo
+from daconx.models.modifier import ModifierInfo
+from daconx.models.state_variable import StateVariableInfo
 
 
 class ContractInfo():

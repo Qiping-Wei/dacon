@@ -5,7 +5,7 @@ import os
 import funion
 
 from funion.contract_dependency import combine_involved_contracts
-from dacon.traverse_data_collection import data_collection
+from daconx.traverse_data_collection import data_collection
 
 logger = logging.getLogger(__name__)
 

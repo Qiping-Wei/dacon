@@ -1,5 +1,5 @@
-from dacon.config import result_extraction_symbols
-from dacon.models.id_name import id_name
+from daconx.config import result_extraction_symbols
+from daconx.models.id_name import id_name
 
 
 class StateVariableInfo():

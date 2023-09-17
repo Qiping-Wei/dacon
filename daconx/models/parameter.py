@@ -1,4 +1,4 @@
-from dacon.models.id_name import id_name
+from daconx.models.id_name import id_name
 
 
 class ParameterInfo():

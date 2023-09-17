@@ -2,14 +2,14 @@
 import logging
 import os.path
 
-from dacon.models.id_name import id_name
-from dacon.models.contract import ContractLevelInfo, ContractInfo
+from daconx.models.id_name import id_name
+from daconx.models.contract import ContractLevelInfo, ContractInfo
 
-from dacon.node_traverse import AST_NodeTraverse
-from dacon.result_extraction import collect_state_variable_data, collect_modifier_data, collect_function_data, \
+from daconx.node_traverse import AST_NodeTraverse
+from daconx.result_extraction import collect_state_variable_data, collect_modifier_data, collect_function_data, \
     collect_event_data
-from dacon.solc_compile import get_ast_nodes
-from dacon.utils import dump_to_json
+from daconx.solc_compile import get_ast_nodes
+from daconx.utils import dump_to_json
 
 logger = logging.getLogger(__name__)
 

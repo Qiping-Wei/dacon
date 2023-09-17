@@ -1,7 +1,7 @@
-from dacon.extract_extraction_utils import collect_assignment_general, collect_condition_general, \
+from daconx.extract_extraction_utils import collect_assignment_general, collect_condition_general, \
     collect_local_variable_general
-from dacon.models.id_name import id_name
-from dacon.models.parameter import ParameterInfo
+from daconx.models.id_name import id_name
+from daconx.models.parameter import ParameterInfo
 
 
 

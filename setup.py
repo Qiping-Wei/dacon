@@ -6,9 +6,9 @@ from setuptools.command.install import install as _install
 from subprocess import check_call
 
 # Package meta-data.
-NAME = "dacon"
+NAME = "daconx"
 DESCRIPTION = 'A tool to collect data for Solidity smart contract for static analysis'
-URL = "xxx"
+URL = "https://github.com/Qiping-Wei/dacon"
 AUTHOR = "isctae"
 AUTHOR_MAIL = "isctae@gmail.com"
 REQUIRES_PYTHON = ">=3.6.0"
@@ -46,7 +46,7 @@ class InstallCommand(_install):
         _install.run(self)
 
 setup(
-    name='dacon',
+    name='daconx',
     version='0.1.0',
     description=DESCRIPTION,
     author=AUTHOR,
@@ -60,6 +60,6 @@ setup(
     # extras_require=EXTRAS,
     package_data={"contracts": ["*"]},
     include_package_data=True,
-    entry_points={"console_scripts": ["extract=dacon.cli:main"]},
+    entry_points={"console_scripts": ["extract=daconx.cli:main"]},
     cmdclass={"install": InstallCommand},
 )
