@@ -1,0 +1,124 @@
+{
+    "solidity_file_name": "HoloToken.sol",
+    "contract_name": "Ownable",
+    "solc_version": "0.4.18",
+    "state_variables": [
+        "owner"
+    ],
+    "modifiers": [
+        "onlyOwner"
+    ],
+    "events": [
+        "OwnershipTransferred"
+    ],
+    "functions": [
+        "Ownable",
+        "transferOwnership"
+    ],
+    "state_variable_info": {
+        "owner": {
+            "name": "owner",
+            "type": "address",
+            "visibility": "public",
+            "initial_value": "NULL",
+            "function_calls": [],
+            "code": "address public owner"
+        }
+    },
+    "modifier_info": {
+        "onlyOwner": {
+            "name": "onlyOwner",
+            "conditions": [
+                "require(msg.sender==owner)"
+            ],
+            "state_variables_read": [
+                "owner"
+            ],
+            "assignments": [],
+            "state_variables_written": [],
+            "function_calls": [
+                "require"
+            ],
+            "code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n  }"
+        }
+    },
+    "function_info": {
+        "Ownable": {
+            "name": "Ownable",
+            "selector": "",
+            "is_constructor": false,
+            "implemented": true,
+            "virtual": false,
+            "visibility": "public",
+            "stateMutability": "nonpayable",
+            "parameter_info": {},
+            "return_values": [],
+            "modifiers": [],
+            "branch_conditions": [],
+            "state_variables_read_in_BC": [],
+            "code_statement_write_state_variables": [
+                "owner=msg.sender"
+            ],
+            "state_variables_written": [
+                "owner"
+            ],
+            "function_calls": [],
+            "function_code": "function Ownable() public {\n    owner = msg.sender;\n  }",
+            "local_variables": {},
+            "events": []
+        },
+        "transferOwnership": {
+            "name": "transferOwnership",
+            "selector": "",
+            "is_constructor": false,
+            "implemented": true,
+            "virtual": false,
+            "visibility": "public",
+            "stateMutability": "nonpayable",
+            "parameter_info": {
+                "newOwner": {
+                    "name": "newOwner",
+                    "type": "address"
+                }
+            },
+            "return_values": [],
+            "modifiers": [
+                "onlyOwner"
+            ],
+            "branch_conditions": [
+                "require(newOwner!=address(0))"
+            ],
+            "state_variables_read_in_BC": [],
+            "code_statement_write_state_variables": [
+                "owner=newOwner"
+            ],
+            "state_variables_written": [
+                "owner"
+            ],
+            "function_calls": [
+                "require"
+            ],
+            "function_code": "function transferOwnership(address newOwner) public onlyOwner {\n    require(newOwner != address(0));\n    OwnershipTransferred(owner, newOwner);\n    owner = newOwner;\n  }",
+            "local_variables": {},
+            "events": [
+                "OwnershipTransferred"
+            ]
+        }
+    },
+    "event_info": {
+        "OwnershipTransferred": {
+            "name": "OwnershipTransferred",
+            "parameter_info": {
+                "previousOwner": {
+                    "name": "previousOwner",
+                    "type": "address"
+                },
+                "newOwner": {
+                    "name": "newOwner",
+                    "type": "address"
+                }
+            },
+            "code": "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);"
+        }
+    }
+}

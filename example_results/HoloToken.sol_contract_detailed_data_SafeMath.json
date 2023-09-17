@@ -1,0 +1,174 @@
+{
+    "solidity_file_name": "HoloToken.sol",
+    "contract_name": "SafeMath",
+    "solc_version": "0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "events": [],
+    "functions": [
+        "mul",
+        "div",
+        "sub",
+        "add"
+    ],
+    "state_variable_info": {},
+    "modifier_info": {},
+    "function_info": {
+        "mul": {
+            "name": "mul",
+            "selector": "",
+            "is_constructor": false,
+            "implemented": true,
+            "virtual": false,
+            "visibility": "internal",
+            "stateMutability": "pure",
+            "parameter_info": {
+                "a": {
+                    "name": "a",
+                    "type": "uint256"
+                },
+                "b": {
+                    "name": "b",
+                    "type": "uint256"
+                }
+            },
+            "return_values": [
+                {
+                    "name": "NULL",
+                    "type": "uint256"
+                }
+            ],
+            "modifiers": [],
+            "branch_conditions": [
+                "a==0",
+                "assert(c/a==b)"
+            ],
+            "state_variables_read_in_BC": [],
+            "code_statement_write_state_variables": [],
+            "state_variables_written": [],
+            "function_calls": [
+                "assert"
+            ],
+            "function_code": "function mul(uint256 a, uint256 b) internal pure returns (uint256) {\n    if (a == 0) {\n      return 0;\n    }\n    uint256 c = a * b;\n    assert(c / a == b);\n    return c;\n  }",
+            "local_variables": {
+                "c": "a*b"
+            },
+            "events": []
+        },
+        "div": {
+            "name": "div",
+            "selector": "",
+            "is_constructor": false,
+            "implemented": true,
+            "virtual": false,
+            "visibility": "internal",
+            "stateMutability": "pure",
+            "parameter_info": {
+                "a": {
+                    "name": "a",
+                    "type": "uint256"
+                },
+                "b": {
+                    "name": "b",
+                    "type": "uint256"
+                }
+            },
+            "return_values": [
+                {
+                    "name": "NULL",
+                    "type": "uint256"
+                }
+            ],
+            "modifiers": [],
+            "branch_conditions": [],
+            "state_variables_read_in_BC": [],
+            "code_statement_write_state_variables": [],
+            "state_variables_written": [],
+            "function_calls": [],
+            "function_code": "function div(uint256 a, uint256 b) internal pure returns (uint256) {\n    // assert(b > 0); // Solidity automatically throws when dividing by 0\n    uint256 c = a / b;\n    // assert(a == b * c + a % b); // There is no case in which this doesn't hold\n    return c;\n  }",
+            "local_variables": {
+                "c": "a/b"
+            },
+            "events": []
+        },
+        "sub": {
+            "name": "sub",
+            "selector": "",
+            "is_constructor": false,
+            "implemented": true,
+            "virtual": false,
+            "visibility": "internal",
+            "stateMutability": "pure",
+            "parameter_info": {
+                "a": {
+                    "name": "a",
+                    "type": "uint256"
+                },
+                "b": {
+                    "name": "b",
+                    "type": "uint256"
+                }
+            },
+            "return_values": [
+                {
+                    "name": "NULL",
+                    "type": "uint256"
+                }
+            ],
+            "modifiers": [],
+            "branch_conditions": [
+                "assert(b<=a)"
+            ],
+            "state_variables_read_in_BC": [],
+            "code_statement_write_state_variables": [],
+            "state_variables_written": [],
+            "function_calls": [
+                "assert"
+            ],
+            "function_code": "function sub(uint256 a, uint256 b) internal pure returns (uint256) {\n    assert(b <= a);\n    return a - b;\n  }",
+            "local_variables": {},
+            "events": []
+        },
+        "add": {
+            "name": "add",
+            "selector": "",
+            "is_constructor": false,
+            "implemented": true,
+            "virtual": false,
+            "visibility": "internal",
+            "stateMutability": "pure",
+            "parameter_info": {
+                "a": {
+                    "name": "a",
+                    "type": "uint256"
+                },
+                "b": {
+                    "name": "b",
+                    "type": "uint256"
+                }
+            },
+            "return_values": [
+                {
+                    "name": "NULL",
+                    "type": "uint256"
+                }
+            ],
+            "modifiers": [],
+            "branch_conditions": [
+                "assert(c>=a)"
+            ],
+            "state_variables_read_in_BC": [],
+            "code_statement_write_state_variables": [],
+            "state_variables_written": [],
+            "function_calls": [
+                "assert"
+            ],
+            "function_code": "function add(uint256 a, uint256 b) internal pure returns (uint256) {\n    uint256 c = a + b;\n    assert(c >= a);\n    return c;\n  }",
+            "local_variables": {
+                "c": "a+b"
+            },
+            "events": []
+        }
+    },
+    "event_info": {}
+}
