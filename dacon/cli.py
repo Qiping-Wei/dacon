@@ -3,10 +3,8 @@ import logging
 import os
 
 import funion
-from funion.compile_contract import get_ast_root_node
-from funion.contract_dependency import combine_involved_contracts
 
-from dacon.solc_compile import get_ast_nodes
+from funion.contract_dependency import combine_involved_contracts
 from dacon.traverse_data_collection import data_collection
 
 logger = logging.getLogger(__name__)

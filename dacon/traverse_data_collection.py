@@ -1,4 +1,4 @@
-import json
+
 import logging
 import os.path
 
@@ -9,7 +9,7 @@ from dacon.node_traverse import AST_NodeTraverse
 from dacon.result_extraction import collect_state_variable_data, collect_modifier_data, collect_function_data, \
     collect_event_data
 from dacon.solc_compile import get_ast_nodes
-from dacon.utils import dump_to_json, dump_json_object_to_json
+from dacon.utils import dump_to_json
 
 logger = logging.getLogger(__name__)
 

@@ -1,4 +1,4 @@
-import json
+
 from dacon.models.event import EventInfo
 from dacon.models.function import FunctionInfo
 from dacon.models.modifier import ModifierInfo

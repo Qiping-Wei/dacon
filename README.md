@@ -2,7 +2,7 @@
 The name of Dacon comes from **Da**ta of smart **con**tract. It is designed to collect the data of Solidity smart contract for static analysis. Essentially, it can get data by traversing the AST nodes of a smart contract. 
 
 ### Contract Level Data ###
-```python
+```
 {
     "name":"contract name",        
     "abstract":"is abstract?",
@@ -17,7 +17,7 @@ The name of Dacon comes from **Da**ta of smart **con**tract. It is designed to c
 ```
 
 ### Contract Detailed Data ###
-```python
+```
 {
   "state variables": {
       "name":"state variable name",
@@ -70,13 +70,13 @@ The name of Dacon comes from **Da**ta of smart **con**tract. It is designed to c
 Note that since the root AST node of a contract is given, you can get other detailed data based on your need.
 
 ### Installation ###
-```python
+```
 pip install dacon
 ```
 
 ### Useage ###
 #### Use as a command: ####
-```commandline
+```
 extract -p "path to the Solidity file name" -n "file name" --solv "solc version" --result_path "path to save the result" 
 ```
 
@@ -84,14 +84,14 @@ extract -p "path to the Solidity file name" -n "file name" --solv "solc version"
 #### In the development case: ####
 
 The arguments provided to extract.py in the root directory:
-```commandline
+```
 -p "path to the Solidity file name"
 -n "Solidity file name"
 --solv "the version of solc"
 --result_path "path to save the result"
 ```
 Here is an example to get data for the Solidity file YodaiToken.sol.
-```commandline
+```
 -p ./contracts/
 -n YodaiToken.sol
 --solv 0.8.17
