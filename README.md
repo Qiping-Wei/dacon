@@ -2,7 +2,7 @@
 The name of Dacon comes from **Da**ta of smart **con**tract. It is designed to collect the data of Solidity smart contract for static analysis. Essentially, it can get data by traversing the AST nodes of a smart contract. 
 
 ### Contract Level Data ###
-```json
+```python
 {
     "name":"contract name",        
     "abstract":"is abstract?",
@@ -17,7 +17,7 @@ The name of Dacon comes from **Da**ta of smart **con**tract. It is designed to c
 ```
 
 ### Contract Detailed Data ###
-```json
+```python
 {
   "state variables": {
       "name":"state variable name",
