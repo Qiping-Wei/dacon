@@ -4,20 +4,21 @@ from daconx.models.id_name import id_name
 
 class StateVariableInfo():
     def __init__(self, name: str='', id:int=-1, type:str='', visibility: str = '', initial_value: str = '',code:str="",function_calls:list=[]):
-        self.name = name,
+        self.name = name
         self.id=id
-        self.type = type,
+        self.type = type
         self.visibility = visibility
         self.initial_value = initial_value
-        self.code=code,
+        self.constant=False
+        self.code=code
         self.function_calls=function_calls
     def reset(self):
-        self.name = "",
+        self.name = ""
         self.id = -1
-        self.type = "",
+        self.type = ""
         self.visibility = "private"
         self.initial_value ="NULL"
-        self.code = "",
+        self.code = ""
         self.function_calls = []
 
 
@@ -63,6 +64,8 @@ class StateVariableInfo():
             elif item.startswith("id:"):
                 self.id=int(item.split("id:")[-1])
                 id_name.add_id_name(self.id, self.name)
+            elif item.startswith('constant:'):
+                self.constant=bool(item.split("constant:")[-1])
             else:
                 if item in ['function_call:']: continue
                 # collect function call names

@@ -189,9 +189,10 @@ class FunctionInfo():
 
 
     def collect_local_variable(self,items):
-        v_name,v_value,function_calls=collect_local_variable_general(items)
-        if len(v_name)>0:
-            self.local_variables[v_name]=v_value
+        v_names,v_value,function_calls=collect_local_variable_general(items)
+        if len(v_names)>0:
+            for v_name in v_names:
+                self.local_variables[v_name]=v_value
         for call_name in function_calls:
             if call_name not in self.function_calls:
                 self.function_calls.append(call_name)

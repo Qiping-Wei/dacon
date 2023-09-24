@@ -57,7 +57,7 @@ class AST_NodeTraverse():
                 # -------------- state variable handle --------------------
                 elif node.nodeType == 'VariableDeclaration':
                     self.record(f'state_variable_name:{node.name}')
-                    self.check_properties(node,['id', 'visibility', 'typeDescriptions'])
+                    self.check_properties(node,['id', 'visibility', 'typeDescriptions','constant'])
                     if hasattr(node, 'value'):
                         if node.value is None:
                             self.record(f'NULL')

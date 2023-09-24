@@ -2,31 +2,49 @@ from daconx.config import result_extraction_symbols
 from daconx.utils import is_assignment_operator, is_in_given_list
 
 def collect_local_variable_general(items:list):
+    """
+    a case of two local variables are defined in one statement.
+     (bool ok, bytes memory returnData) = _UPGRADE_BEACON.staticcall("");
+     ['state_variable_name:ok', 'id:10', 'visibility:internal', 'type:bool', 'NULL', 'state_variable_name:returnData', 'id:12', 'visibility:internal', 'type:bytes', 'NULL', 'initial_value:', 'function_call:', '_UPGRADE_BEACON.staticcall@@MemberAccess', 'xxxxfunction_call:_UPGRADE_BEACON:staticcall', '(', '""@@Literal', ')', '']
+    :param items:
+    :return:
+    """
     function_calls=[]
+    sv_names=[]
     v_name = items[0].split('state_variable_name:')[-1]
+    sv_names.append(v_name)
     v_value = ""
     flag_read = False
     for item in items[1:]:
         if item in ['function_call:']: continue
-        if item.startswith('result_extraction_symbols["function_call"]'):
-            function_call_name = item.split('result_extraction_symbols["function_call"]')[-1]
+        if item.startswith(result_extraction_symbols["function_call"]):
+            function_call_name = item.split(result_extraction_symbols["function_call"])[-1]
             if function_call_name not in function_calls:
                 function_calls.append(function_call_name)
             continue
         elif item.startswith('id:'): continue
         elif item.startswith("visibility:"):continue
         elif item.startswith("type:"):continue
+        elif item.startswith('state_variable_name:'):
+            v_name = item.split('state_variable_name:')[-1]
+            sv_names.append(v_name)
 
         if item.startswith('initial_value'):
             flag_read=True
         else:
             if flag_read:
+                if item in ['function_call:']: continue
+                if item.startswith(result_extraction_symbols["function_call"]):
+                    function_call_name = item.split(result_extraction_symbols["function_call"])[-1]
+                    if function_call_name not in function_calls:
+                        function_calls.append(function_call_name)
+                    continue
                 if '@@' in item:
                     item_ele = item.split("@@")
                     v_value += item_ele[0]
                 else:
                     v_value += item
-    return v_name,v_value,function_calls
+    return sv_names,v_value,function_calls
 
 
 def collect_assignment_general(items:list,state_variables:list):
