@@ -153,7 +153,7 @@ def data_collection(args):
             path="{}{}_{}_{}.json".format(args.result_path,args.solidity_file_name,"contract_detailed_data",con_name)
             dump_to_json(contractInfo,path)
     else:
-        logger.info(f'{args.result_path} does not exist.')
+        logger.info(f'Path {args.result_path} does not exist.')
 
 
 

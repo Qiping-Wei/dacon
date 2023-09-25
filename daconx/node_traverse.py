@@ -37,7 +37,7 @@ class AST_NodeTraverse():
 
                 # separate the statements of the smart contract code
                 if node.nodeType in ['ExpressionStatement', 'IfStatement', 'ForStatement',
-                                     'VariableDeclarationStatement']:
+                                     'VariableDeclarationStatement','Return','InlineAssembly']:
                     self.record(f'----')
 
                 # -------------- function handle --------------------
@@ -86,36 +86,46 @@ class AST_NodeTraverse():
 
                 elif node.nodeType == 'ExpressionStatement':
                     if hasattr(node, 'expression'):
-                        self.traverse_ast(node.expression)
+                        if node.expression is not None:
+                            self.traverse_ast(node.expression)
 
                 elif node.nodeType == 'IfStatement':
                     self.record(f'if_statement:')
                     if hasattr(node, 'condition'):
-                        self.traverse_ast(node.condition)
+                        if node.condition is not None:
+                            self.traverse_ast(node.condition)
                     if hasattr(node, 'trueBody'):
-                        for body in node.trueBody:
-                            self.traverse_ast(body)
+                        if node.trueBody is not None:
+                            if isinstance(node.trueBody, list) or\
+                               isinstance(node.trueBody,tuple):
+                                for body in node.trueBody:
+                                    self.traverse_ast(body)
+                            else:
+                                self.traverse_ast(node.trueBody)
                     if hasattr(node, 'falseBody'):
-                        if isinstance(node.falseBody, list):
-                            for body in node.falseBody:
-                                self.traverse_ast(body)
-                        else:
-                            if node.falseBody is not None:
-                                if hasattr(node.falseBody, 'nodeType'):
-                                    if node.falseBody.nodeType == 'IfStatement':
-                                        self.traverse_ast(node.falseBody)
-                                    else:
-                                        logger.info('need to handle if statement')
+                        if node.falseBody is not None:
+                            if isinstance(node.falseBody, list):
+                                for body in node.falseBody:
+                                    self.traverse_ast(body)
+                            else:
+                                if node.falseBody is not None:
+                                    if hasattr(node.falseBody, 'nodeType'):
+                                        if node.falseBody.nodeType == 'IfStatement':
+                                            self.traverse_ast(node.falseBody)
+                                        else:
+                                            logger.info('need to handle if statement')
 
                 elif node.nodeType == 'ForStatement':
                     self.record(f'for_statement')
                     if hasattr(node, 'condition'):
-                        self.traverse_ast(node.condition)
+                        if node.condition is not None:
+                            self.traverse_ast(node.condition)
 
                 elif node.nodeType == 'VariableDeclarationStatement':
                     if hasattr(node, 'declarations'):
-                        for declaration in node.declarations:
-                            self.traverse_ast(declaration)
+                        if node.declarations is not None:
+                            for declaration in node.declarations:
+                                self.traverse_ast(declaration)
 
                     if hasattr(node, 'initialValue'):
                         self.record(f'initial_value:')
@@ -137,48 +147,57 @@ class AST_NodeTraverse():
                 elif node.nodeType == "FunctionCall":
                     # may also print out the name of the function call
                     if hasattr(node, 'expression'):
-                        self.record(f'function_call:')
-                        self.traverse_ast(node.expression)
+                        if node.expression is not None:
+                            self.record(f'function_call:')
+                            self.traverse_ast(node.expression)
 
                     if hasattr(node, 'arguments'):
-                        # print(f'arguments:')
-                        logger.info(f'{color_prefix["Green"]}({color_prefix["Gray"]}')  # (
-                        self.accumulated_print_results += '(\n'
-                        len_args = len(node.arguments)
-                        for idx, argument in enumerate(node.arguments):
-                            if idx > 0 and idx <= len_args - 1:
-                                logger.info(f'{color_prefix["Green"]},{color_prefix["Gray"]}')
-                                self.accumulated_print_results += ",\n"
-                            self.traverse_ast(argument)
-                        logger.info(f'{color_prefix["Green"]}){color_prefix["Gray"]}')  # )
-                        self.accumulated_print_results += ")\n"
+                        if node.arguments is not None:
+                            # print(f'arguments:')
+                            logger.info(f'{color_prefix["Green"]}({color_prefix["Gray"]}')  # (
+                            self.accumulated_print_results += '(\n'
+                            len_args = len(node.arguments)
+                            for idx, argument in enumerate(node.arguments):
+                                if idx > 0 and idx <= len_args - 1:
+                                    logger.info(f'{color_prefix["Green"]},{color_prefix["Gray"]}')
+                                    self.accumulated_print_results += ",\n"
+                                self.traverse_ast(argument)
+                            logger.info(f'{color_prefix["Green"]}){color_prefix["Gray"]}')  # )
+                            self.accumulated_print_results += ")\n"
 
                 elif node.nodeType == 'Assignment':
                     self.record(f'assignment:')
 
                     # e.g., owner=msg.sender (assignment)
                     if hasattr(node, 'leftHandSide'):
-                        self.traverse_ast(node.leftHandSide)
+                        if node.leftHandSide is not None:
+                            self.traverse_ast(node.leftHandSide)
                     if hasattr(node, 'operator'):
                         logger.info(f'{node.operator}')
                         self.accumulated_print_results += f'{node.operator}@@operator\n'
                     if hasattr(node, "rightHandSide"):
-                        self.traverse_ast(node.rightHandSide)
+                        if node.rightHandSide is not None:
+                            self.traverse_ast(node.rightHandSide)
                 elif node.nodeType == 'BinaryOperation':
                     # e.g., now+60 days in "end=now+60 days" (binary expression)
                     if hasattr(node, 'leftExpression'):
-                        self.traverse_ast(node.leftExpression)
+                        if node.leftExpression is not None:
+                            self.traverse_ast(node.leftExpression)
                     if hasattr(node, 'operator'):
                         logger.info(f'{node.operator}')
                         self.accumulated_print_results += f'{node.operator}@@operator\n'
                     if hasattr(node, "rightExpression"):
-                        self.traverse_ast(node.rightExpression)
+                        if node.rightExpression is not None:
+                            self.traverse_ast(node.rightExpression)
                 elif node.nodeType == 'UnaryOperation':
                     if hasattr(node, 'operator'):
                         logger.info(f'{node.operator}')
                         self.accumulated_print_results += f'{node.operator}@@operator\n'
                     if hasattr(node, 'subExpression'):
-                        self.traverse_ast(node.subExpression)
+                        if node.subExpression is not None:
+                            self.traverse_ast(node.subExpression)
+                elif node.nodeType=='Return':
+                    print(f'return:{self.print_source_code(node.src)}')
                 elif node.nodeType in ['Literal', 'IndexAccess', 'Identifier', 'MemberAccess', 'EventDefinition',
                                        'ElementaryTypeNameExpression']:
 
@@ -211,10 +230,15 @@ class AST_NodeTraverse():
                                 logger.info(f'xx')
 
                     return
-
+                elif node.nodeType=='InlineAssembly':
+                    if hasattr(node,'operations'):
+                        if node.operations is not None:
+                            self.record(f'InlineAssembly:{node.operations}')
+                else:
+                    print(f'check which type of node is not considered in node_traverse.py')
             if hasattr(node, 'nodes'):
                 # Recursively process child nodes
-                if len(node.nodes) > 0:
+                if node.nodes is not None and len(node.nodes) > 0:
                     for child_node in node.nodes:
                         self.traverse_ast(child_node)
 
@@ -305,6 +329,11 @@ class AST_NodeTraverse():
                 self.record(f'parameters:[]')
 
     def check_return_values(self, node):
+        """
+        'returnParameters' is a property of a function
+        :param node:
+        :return:
+        """
         if hasattr(node, 'returnParameters'):
             len_args = len(node.returnParameters.parameters)
             if len_args > 0:
