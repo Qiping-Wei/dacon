@@ -1,5 +1,5 @@
 from daconx.extract_extraction_utils import collect_assignment_general, collect_condition_general, \
-    collect_local_variable_general
+    collect_local_variable_general,collect_an_independent_function_call_general
 from daconx.models.id_name import id_name
 from daconx.models.parameter import ParameterInfo
 
@@ -31,6 +31,10 @@ class FunctionInfo():
         self.function_calls=[]
         self.function_code=function_code
         self.local_variables={}
+        self.inlineAssembly = []
+        self.emitStatements = []
+        self.returnStatements = []
+        self.independent_function_calls=[]
 
     def reset(self):
         self.name = ""
@@ -57,6 +61,9 @@ class FunctionInfo():
         self.function_code = ""
         self.local_variables = {}
         self.events=[]
+        self.inlineAssembly=[]
+        self.emitStatements=[]
+        self.returnStatements=[]
 
     def to_json(self):
         return {
@@ -151,8 +158,9 @@ class FunctionInfo():
                             name=str(items[1]).split("@@")[0]
                             if name in events:
                                 self.events.append(name)
-                        else:
-                            print(f'check what this case is in function.py')
+                                continue
+                        # means an independent function calls
+                        self.collect_an_independent_function_call(items,state_variables)
 
                 elif items[0].startswith('assignment'):
                     """
@@ -184,6 +192,32 @@ class FunctionInfo():
                 elif items[0].startswith('state_variable_name'):
                     # get local state variable (it will be replaced by its value at where it is used.
                     self.collect_local_variable(items)
+
+                elif items[0].startswith('emitStatement:'):
+                    emit_str=items[0].split('emitStatement:')[-1]
+                    if emit_str.startswith('emit'):
+                        emit_str=emit_str.lstrip('emit')
+                    self.emitStatements.append(emit_str)
+
+                elif items[0].startswith('inlineAssembly:'):
+                    assembly="assembly"
+                    for item in items:
+                        if item.startswith("inlineAssembly:"):
+                            assembly+=item.split("inlineAssembly:")[-1]
+                        else:
+                            assembly+=item
+                    self.inlineAssembly.append(assembly)
+                elif items[0].startswith('return:'):
+                    re_value = ""
+                    for item in items:
+                        if item.startswith("return:"):
+                            re_value += item.split("return:")[-1]
+                        else:
+                            re_value += item
+                    self.returnStatements.append(re_value)
+
+                else:
+                    print(f'check which is not handled in function.py')
 
             self.function_code=function_code_dict[self.name]
 
@@ -223,6 +257,15 @@ class FunctionInfo():
         for sv in sv_written:
             if sv not in self.state_variables_written:
                 self.state_variables_written.append(sv)
+        for call_name in function_calls:
+            if call_name not in self.function_calls:
+                self.function_calls.append(call_name)
+
+    def collect_an_independent_function_call(self,items:list,state_variables:list):
+        call_code,sv_read,function_calls=collect_an_independent_function_call_general(items,state_variables)
+        if call_code not in self.function_calls:
+            self.function_calls.append(call_code)
+        self.independent_function_calls.append([call_code,sv_read])
         for call_name in function_calls:
             if call_name not in self.function_calls:
                 self.function_calls.append(call_name)

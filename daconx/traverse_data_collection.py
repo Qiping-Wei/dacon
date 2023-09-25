@@ -89,6 +89,7 @@ def contract_level_data_collection(nodes:list, solidity_file_content):
 def contract_detailed_data_collection(solidity_file_name,solc_version,contract_level_data:ContractLevelInfo,solidity_file_content:str):
     contract_detailed_data={}
     for con_name,con_level_info in contract_level_data.items():
+        logger.info(f'**** {con_name} ****')
         node_traverse=AST_NodeTraverse(solidity_file_content)
         # traverse the contract ast nodes
         node_traverse.traverse_ast(con_level_info.node)

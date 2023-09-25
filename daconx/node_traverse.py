@@ -37,7 +37,7 @@ class AST_NodeTraverse():
 
                 # separate the statements of the smart contract code
                 if node.nodeType in ['ExpressionStatement', 'IfStatement', 'ForStatement',
-                                     'VariableDeclarationStatement','Return','InlineAssembly']:
+                                     'VariableDeclarationStatement','Return','InlineAssembly','EmitStatement','StructDefinition']:
                     self.record(f'----')
 
                 # -------------- function handle --------------------
@@ -196,8 +196,7 @@ class AST_NodeTraverse():
                     if hasattr(node, 'subExpression'):
                         if node.subExpression is not None:
                             self.traverse_ast(node.subExpression)
-                elif node.nodeType=='Return':
-                    print(f'return:{self.print_source_code(node.src)}')
+
                 elif node.nodeType in ['Literal', 'IndexAccess', 'Identifier', 'MemberAccess', 'EventDefinition',
                                        'ElementaryTypeNameExpression']:
 
@@ -230,12 +229,42 @@ class AST_NodeTraverse():
                                 logger.info(f'xx')
 
                     return
+                elif node.nodeType=='Return':
+                    print(f'return:{self.print_source_code(node.src)}')
                 elif node.nodeType=='InlineAssembly':
                     if hasattr(node,'operations'):
                         if node.operations is not None:
-                            self.record(f'InlineAssembly:{node.operations}')
+                            self.record(f'inlineAssembly:{node.operations}')
+                elif node.nodeType=='EmitStatement':
+                    self.record(f'emitStatement:{self.print_source_code(node.src)}')
+                elif node.nodeType == 'PlaceholderStatement':
+                    print(f'node of type PlaceholderStatement is not considered yet')
+                elif node.nodeType=='StructDefinition':
+                    print(f'node of type StructDefinition is not considered yet.\tThe code is: {self.print_source_code(node.src)}')
+                elif node.nodeType=='UncheckedBlock':
+                    if hasattr(node,'statements'):
+                        if node.statements is not None:
+                            for statement in node.statements:
+                                self.traverse_ast(statement)
+                elif node.nodeType=='NewExpression':
+                    self.record(f'{self.print_source_code(node.src)}@@NewExpression')
+                    print(
+                        f'node of type NewExpression is not considered as a parent node now (not go deeper). \tThe code is: {self.print_source_code(node.src)}')
+                elif node.nodeType=='FunctionCallOptions':
+                    self.record(f'{self.print_source_code(node.src)}@@FunctionCallOptions')
+                    print(
+                        f'node of type FunctionCallOptions is not considered as a parent node now (not go deeper).\tThe code is: {self.print_source_code(node.src)}')
+
+                elif node.nodeType=='UsingForDirective':
+                    print(
+                        f'node of type UsingForDirective is not considered as a parent node now (not go deeper).\tThe code is: {self.print_source_code(node.src)}')
+
                 else:
+
                     print(f'check which type of node is not considered in node_traverse.py')
+
+
+
             if hasattr(node, 'nodes'):
                 # Recursively process child nodes
                 if node.nodes is not None and len(node.nodes) > 0:
