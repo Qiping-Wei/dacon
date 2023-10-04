@@ -1,4 +1,4 @@
-## Dacon ##
+## Daconx ##
 It is designed to collect the data of Solidity smart contract for static analysis. Essentially, it can get data by traversing the AST nodes of a smart contract. 
 
 ### Contract Level Data ###

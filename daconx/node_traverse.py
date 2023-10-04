@@ -424,9 +424,9 @@ class AST_NodeTraverse():
         :return:
         """
         if hasattr(node, 'parameters'):
-            len_args = len(node.my_input_data.my_input_data)
+            len_args = len(node.parameters.parameters)
             if len_args > 0:
-                for idx, parameter in enumerate(node.my_input_data.my_input_data):
+                for idx, parameter in enumerate(node.parameters.parameters):
                     if hasattr(parameter, 'typeDescriptions') and hasattr(parameter, 'name'):
                         id = -1
                         if hasattr(parameter, 'id'): id = parameter.id
@@ -443,9 +443,9 @@ class AST_NodeTraverse():
         :return:
         """
         if hasattr(node, 'returnParameters'):
-            len_args = len(node.returnParameters.my_input_data)
+            len_args = len(node.returnParameters.parameters)
             if len_args > 0:
-                for idx, parameter in enumerate(node.returnParameters.my_input_data):
+                for idx, parameter in enumerate(node.returnParameters.parameters):
                     if hasattr(parameter, 'typeDescriptions') and hasattr(parameter, 'name'):
                         if len(parameter.name) == 0:
                             parameter_name = 'NULL'
