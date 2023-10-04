@@ -19,6 +19,8 @@ def collect_local_variable_general(items:list):
     sv_names.append(v_name)
     v_value = ""
     flag_read = False
+    flag_condi_read=False
+    condition=""
     for item in items[1:]:
         if item in ['function_call:']: continue
         if item.startswith(result_extraction_symbols["function_call"]):
@@ -37,6 +39,13 @@ def collect_local_variable_general(items:list):
             flag_read=True
         else:
             if flag_read:
+                if item.startswith('conditional_expression:'):
+                    flag_condi_read=True
+                    continue
+                if "?" in item:
+                    flag_condi_read=False
+                    v_value +="?"
+                    continue
                 if item in ['function_call:']: continue
                 if item.startswith(result_extraction_symbols["function_call"]):
                     function_call_name = item.split(result_extraction_symbols["function_call"])[-1]
@@ -46,9 +55,13 @@ def collect_local_variable_general(items:list):
                 if '@@' in item:
                     item_ele = item.split("@@")
                     v_value += item_ele[0]
+                    if flag_condi_read:
+                        condition+=item_ele[0]
                 else:
                     v_value += item
-    return sv_names,v_value,function_calls
+                    if flag_condi_read:
+                        condition+=item
+    return sv_names,v_value,function_calls,condition
 
 
 def collect_assignment_general(items:list,state_variables:list):
@@ -139,3 +152,32 @@ def collect_an_independent_function_call_general(items:list,state_variables:list
         else:
             call_code += item
     return call_code, sv_read, function_calls
+
+
+def collect_conditional_expression_general(items:list,state_variables:list):
+    condition = ""
+    function_calls = []
+    sv_read = []
+    expre=""
+    for item in items[1:]:
+        if item in ['function_call:']: continue
+        if item.startswith(result_extraction_symbols["function_call"]):
+            function_call_name = item.split(result_extraction_symbols["function_call"])[-1]
+            if function_call_name not in function_calls:
+                function_calls.append(function_call_name)
+            continue
+        if '?' in item:
+            condition= expre
+            expre+="?"
+            continue
+
+        if '@@' in item:
+            item_ele = item.split("@@")
+            expre += item_ele[0]
+            is_sv, sv = is_in_given_list(item, state_variables)
+            if is_sv:
+                if sv not in sv_read:
+                    sv_read.append(sv)
+        else:
+            expre += item
+    return condition,expre, sv_read, function_calls

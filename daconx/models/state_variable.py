@@ -1,5 +1,6 @@
 from daconx.config import result_extraction_symbols
 from daconx.models.id_name import id_name
+from daconx.utils import get_bool_value
 
 
 class StateVariableInfo():
@@ -65,7 +66,8 @@ class StateVariableInfo():
                 self.id=int(item.split("id:")[-1])
                 id_name.add_id_name(self.id, self.name)
             elif item.startswith('constant:'):
-                self.constant=bool(item.split("constant:")[-1])
+
+                self.constant=get_bool_value(item.split("constant:")[-1])
             else:
                 if item in ['function_call:']: continue
                 # collect function call names

@@ -1,8 +1,10 @@
+import time
+import threading
 import solcast
 import solcx
 from solcx import compile_standard
 
-from daconx.utils import read_a_file
+from daconx.utils import read_a_file, remove_comments
 
 """
 Assume that all related libraries or contracts are in a single file.
@@ -35,6 +37,8 @@ def get_ast_nodes(solidity_file_path:str,solidity_file_name: str, solc_version: 
     solidity_file_path_name = solidity_file_path + solidity_file_name
 
     file_content = read_a_file(solidity_file_path_name)
+
+    file_content=remove_comments(file_content)
 
 
     # Compile the contract using py-solc-x

@@ -70,3 +70,11 @@ def dump_to_json(data,file_path:str,indent=4):
 def dump_json_object_to_json(data,file_path:str,indent=4):
     with open(file_path, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=indent)
+
+def get_bool_value(data:str):
+    bool_v=False
+    if data in ['false', 'False']:
+        bool_v = False
+    elif data in ['true', 'True']:
+        bool_v = True
+    return bool_v

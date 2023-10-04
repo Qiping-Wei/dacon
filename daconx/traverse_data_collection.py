@@ -1,6 +1,9 @@
 
 import logging
+import multiprocessing
 import os.path
+import threading
+import time
 
 from daconx.models.id_name import id_name
 from daconx.models.contract import ContractLevelInfo, ContractInfo
@@ -12,6 +15,7 @@ from daconx.solc_compile import get_ast_nodes
 from daconx.utils import dump_to_json
 
 logger = logging.getLogger(__name__)
+
 
 def get_code_from_src(src: str, content:str):
     items = src.split(":")
@@ -82,7 +86,8 @@ def contract_level_data_collection(nodes:list, solidity_file_content):
 
     # replace id with name for linearizedBaseContracts
     for con_level_info in contract_level_info.values():
-        con_level_info.linearizedBaseContracts=[id_name.get_name_from_id(id_) for id_ in con_level_info.linearizedBaseContracts]
+        lbc=[id_name.get_name_from_id(id_) for id_ in con_level_info.linearizedBaseContracts]
+        con_level_info.linearizedBaseContracts=[item for item in lbc if len(item)>0]
     return contract_level_info
 
 
@@ -135,11 +140,12 @@ def output_contract_level_data(contract_level_data:ContractLevelInfo, result_pat
 
 
 def data_collection(args):
+
     # compile to get ast nodes and the file content that solc compiles from it
     nodes, solidity_file_content = get_ast_nodes(args.solidity_file_path, args.solidity_file_name, args.solv,
                                                  args.imports)
 
-    # collect contract level data
+        # collect contract level data
     contract_level_info=contract_level_data_collection(nodes, solidity_file_content)
 
 
@@ -155,6 +161,31 @@ def data_collection(args):
             dump_to_json(contractInfo,path)
     else:
         logger.info(f'Path {args.result_path} does not exist.')
+    return contract_level_info,contract_detailed_data
 
+
+def data_collection_1(solidity_file_path:str,solidity_file_name:str, solv:str, result_path:str="",imports:list=[]):
+
+    # compile to get ast nodes and the file content that solc compiles from it
+    nodes, solidity_file_content = get_ast_nodes(solidity_file_path, solidity_file_name, solv,
+                                                 imports)
+
+        # collect contract level data
+    contract_level_info=contract_level_data_collection(nodes, solidity_file_content)
+
+
+    # for each contract, collect more data
+    contract_detailed_data=contract_detailed_data_collection(solidity_file_name,solv,contract_level_info,solidity_file_content)
+
+    if os.path.exists(result_path):
+        path = "{}{}_{}.json".format(result_path, solidity_file_name, "contract_level_data")
+        output_contract_level_data(contract_level_info, path)
+
+        for con_name, contractInfo in contract_detailed_data.items():
+            path="{}{}_{}_{}.json".format(result_path,solidity_file_name,"contract_detailed_data",con_name)
+            dump_to_json(contractInfo,path)
+    else:
+        logger.info(f'Path {result_path} does not exist.')
+    return contract_level_info,contract_detailed_data
 
 

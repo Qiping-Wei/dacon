@@ -4,7 +4,7 @@ from daconx.config import color_prefix
 from daconx.utils import read_a_file
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 
 
 class AST_NodeTraverse():
@@ -37,7 +37,7 @@ class AST_NodeTraverse():
 
                 # separate the statements of the smart contract code
                 if node.nodeType in ['ExpressionStatement', 'IfStatement', 'ForStatement',
-                                     'VariableDeclarationStatement','Return','InlineAssembly','EmitStatement','StructDefinition']:
+                                     'VariableDeclarationStatement','Return','InlineAssembly','EmitStatement','StructDefinition','DoWhileStatement','WhileStatement']:
                     self.record(f'----')
 
                 # -------------- function handle --------------------
@@ -116,7 +116,7 @@ class AST_NodeTraverse():
                                             logger.info('need to handle if statement')
 
                 elif node.nodeType == 'ForStatement':
-                    self.record(f'for_statement')
+                    self.record(f'for_statement:')
                     if hasattr(node, 'condition'):
                         if node.condition is not None:
                             self.traverse_ast(node.condition)
@@ -203,8 +203,7 @@ class AST_NodeTraverse():
                     name = ""
                     if hasattr(node, 'name'):
                         name = node.name
-                    # if hasattr(node, 'id'):
-                    #     print(f'       id: {node.id}')
+
                     if hasattr(node, 'src'):
                         code = self.print_source_code(node.src)
                         self.accumulated_print_results += code + f'@@{node.nodeType}\n'
@@ -217,20 +216,24 @@ class AST_NodeTraverse():
                             if node.nodeType == 'Identifier':
                                 self.accumulated_print_results += f'xxxxfunction_call:{name}\n'  # used to collect function call names
                             elif node.nodeType == 'MemberAccess':
-                                if hasattr(node, 'expression'):
-                                    if hasattr(node.expression, 'name'):
-                                        name = node.expression.name
-                                if hasattr(node, 'memberName'):
-                                    member_name = node.memberName
-                                    self.accumulated_print_results += f'xxxxfunction_call:{name}:{member_name}\n'  # used to collect function call names
+                                self.accumulated_print_results += f'xxxxfunction_call:{code}\n'  # used to collect function call names
+
+                                # if hasattr(node, 'expression'):
+                                #     if hasattr(node.expression, 'name'):
+                                #         name = node.expression.name
+                                # if hasattr(node, 'memberName'):
+                                #     member_name = node.memberName
+                                #     self.accumulated_print_results += f'xxxxfunction_call:{name}:{member_name}\n'  # used to collect function call names
 
                             else:
                                 # member access like: token.mint, value.mul
-                                logger.info(f'xx')
+                                print(f'info: Consider what type of function call is not captured in node_traverse.py')
 
                     return
+
                 elif node.nodeType=='Return':
-                    print(f'return:{self.print_source_code(node.src)}')
+                    self.record(f'return:{self.print_source_code(node.src)}')
+
                 elif node.nodeType=='InlineAssembly':
                     if hasattr(node,'operations'):
                         if node.operations is not None:
@@ -238,9 +241,11 @@ class AST_NodeTraverse():
                 elif node.nodeType=='EmitStatement':
                     self.record(f'emitStatement:{self.print_source_code(node.src)}')
                 elif node.nodeType == 'PlaceholderStatement':
-                    print(f'node of type PlaceholderStatement is not considered yet')
+                    # print(f'info: node of type PlaceholderStatement is not considered yet\n')
+                    pass
                 elif node.nodeType=='StructDefinition':
-                    print(f'node of type StructDefinition is not considered yet.\tThe code is: {self.print_source_code(node.src)}')
+                    # print(f'info: node of type StructDefinition is not considered yet.\n\tThe code is: {self.print_source_code(node.src)}\n')
+                    pass
                 elif node.nodeType=='UncheckedBlock':
                     if hasattr(node,'statements'):
                         if node.statements is not None:
@@ -248,28 +253,102 @@ class AST_NodeTraverse():
                                 self.traverse_ast(statement)
                 elif node.nodeType=='NewExpression':
                     self.record(f'{self.print_source_code(node.src)}@@NewExpression')
-                    print(
-                        f'node of type NewExpression is not considered as a parent node now (not go deeper). \tThe code is: {self.print_source_code(node.src)}')
+                    # print(
+                    #     f'info: node of type NewExpression is not considered as a parent node now (not go deeper). \n\tThe code is: {self.print_source_code(node.src)}\n')
                 elif node.nodeType=='FunctionCallOptions':
                     self.record(f'{self.print_source_code(node.src)}@@FunctionCallOptions')
-                    print(
-                        f'node of type FunctionCallOptions is not considered as a parent node now (not go deeper).\tThe code is: {self.print_source_code(node.src)}')
+                    # print(
+                    #     f'info: node of type FunctionCallOptions is not considered as a parent node now (not go deeper).\n\tThe code is: {self.print_source_code(node.src)}\n')
 
                 elif node.nodeType=='UsingForDirective':
-                    print(
-                        f'node of type UsingForDirective is not considered as a parent node now (not go deeper).\tThe code is: {self.print_source_code(node.src)}')
+                    # print(
+                    #     f'info: node of type UsingForDirective is not considered as a parent node now (not go deeper).\n\tThe code is: {self.print_source_code(node.src)}\n')
+                    pass
+                elif node.nodeType=='EnumDefinition':
+                    self.record(f'{self.print_source_code(node.src)}@@EnumDefinition')
+                    # print(
+                    #     f'info: node of type EnumDefinition is not considered as a parent node now (not go deeper).\n\tThe code is: {self.print_source_code(node.src)}\n')
+
+                elif node.nodeType=='Conditional':
+                    # same as if statement
+                    self.record(f'conditional_expression:')
+                    if hasattr(node, 'condition'):
+                        if node.condition is not None:
+                            self.traverse_ast(node.condition)
+                        logger.info(f'{color_prefix["Green"]}?{color_prefix["Gray"]}')
+                        self.accumulated_print_results += "?\n"
+                    if hasattr(node, 'trueExpression'):
+                        if node.trueExpression is not None:
+                            if hasattr(node.trueExpression, 'expression'):
+                                self.traverse_ast(node.trueExpression.expression)
+                            if hasattr(node.trueExpression,'arguments'):
+                                if node.trueExpression.arguments is not None:
+                                    logger.info(f'{color_prefix["Green"]}({color_prefix["Gray"]}')
+                                    self.accumulated_print_results += "(\n"
+                                    for arg in node.trueExpression.arguments:
+                                        self.traverse_ast(arg)
+                                    logger.info(f'{color_prefix["Green"]}){color_prefix["Gray"]}')
+                                    self.accumulated_print_results += ")\n"
+
+                    logger.info(f'{color_prefix["Green"]}:{color_prefix["Gray"]}')
+                    self.accumulated_print_results += ":\n"
+
+                    if hasattr(node, 'falseExpression'):
+                        if node.falseExpression is not None:
+                            if hasattr(node.falseExpression, 'expression'):
+                                self.traverse_ast(node.falseExpression.expression)
+                            if hasattr(node.falseExpression, 'arguments'):
+                                if node.falseExpression.arguments is not None:
+                                    logger.info(f'{color_prefix["Green"]}({color_prefix["Gray"]}')
+                                    self.accumulated_print_results += "(\n"
+                                    for arg in node.falseExpression.arguments:
+                                        self.traverse_ast(arg)
+                                    logger.info(f'{color_prefix["Green"]}){color_prefix["Gray"]}')
+                                    self.accumulated_print_results += ")\n"
+                elif node.nodeType=='Continue':
+                    # print(
+                    #     f'info: node of type Continue is not considered as a parent node now (not go deeper).\n\tThe code is: {self.print_source_code(node.src)}\n')
+                    pass
+                elif node.nodeType=='Break':
+                    # print(
+                    #     f'info: node of type Break is not considered as a parent node now (not go deeper).\n\tThe code is: {self.print_source_code(node.src)}\n')
+                    pass
+                elif node.nodeType=='Throw':
+                    # print(
+                    #     f'info: node of type Throw is not considered as a parent node now (not go deeper).\n\tThe code is: {self.print_source_code(node.src)}\n')
+                    pass
+                elif node.nodeType=='WhileStatement':
+                    self.record(f'while_statement:')
+                    if hasattr(node,'condition'):
+                        if node.condition is not None:
+                            self.traverse_ast(node.condition)
+                elif node.nodeType=='DoWhileStatement':
+                    self.record(f'do_while_statement:')
+                    if hasattr(node, 'condition'):
+                        if node.condition is not None:
+                            self.traverse_ast(node.condition)
+                elif node.nodeType=='TryStatement':
+                    if hasattr(node,'externalCall'):
+                        self.traverse_ast(node.externalCall)
+                elif node.nodeType=='IndexRangeAccess':
+                    self.record(f'{self.print_source_code(node.src)}@@IndexRangeAccess')
+                    # print(
+                    #     f'info: node of type IndexRangeAccess is not considered as a parent node now (not go deeper).\n\tThe code is: {self.print_source_code(node.src)}\n')
 
                 else:
 
-                    print(f'check which type of node is not considered in node_traverse.py')
+                    print(f'info: check which type of node is not considered in node_traverse.py\n')
 
 
 
             if hasattr(node, 'nodes'):
                 # Recursively process child nodes
-                if node.nodes is not None and len(node.nodes) > 0:
-                    for child_node in node.nodes:
-                        self.traverse_ast(child_node)
+                if node.nodes is not None:
+                    if isinstance(node.nodes,list):
+                        for child_node in node.nodes:
+                            self.traverse_ast(child_node)
+                    else:
+                        self.traverse_ast(node.nodes)
 
     def print_source_code(self, src: str, description: str = ""):
         items = src.split(":")
@@ -345,9 +424,9 @@ class AST_NodeTraverse():
         :return:
         """
         if hasattr(node, 'parameters'):
-            len_args = len(node.parameters.parameters)
+            len_args = len(node.my_input_data.my_input_data)
             if len_args > 0:
-                for idx, parameter in enumerate(node.parameters.parameters):
+                for idx, parameter in enumerate(node.my_input_data.my_input_data):
                     if hasattr(parameter, 'typeDescriptions') and hasattr(parameter, 'name'):
                         id = -1
                         if hasattr(parameter, 'id'): id = parameter.id
@@ -364,9 +443,9 @@ class AST_NodeTraverse():
         :return:
         """
         if hasattr(node, 'returnParameters'):
-            len_args = len(node.returnParameters.parameters)
+            len_args = len(node.returnParameters.my_input_data)
             if len_args > 0:
-                for idx, parameter in enumerate(node.returnParameters.parameters):
+                for idx, parameter in enumerate(node.returnParameters.my_input_data):
                     if hasattr(parameter, 'typeDescriptions') and hasattr(parameter, 'name'):
                         if len(parameter.name) == 0:
                             parameter_name = 'NULL'

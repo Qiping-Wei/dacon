@@ -1,8 +1,8 @@
 from daconx.extract_extraction_utils import collect_assignment_general, collect_condition_general, \
-    collect_local_variable_general,collect_an_independent_function_call_general
+    collect_local_variable_general, collect_an_independent_function_call_general, collect_conditional_expression_general
 from daconx.models.id_name import id_name
 from daconx.models.parameter import ParameterInfo
-
+from daconx.utils import get_bool_value
 
 
 class FunctionInfo():
@@ -64,6 +64,7 @@ class FunctionInfo():
         self.inlineAssembly=[]
         self.emitStatements=[]
         self.returnStatements=[]
+        self.independent_function_calls = []
 
     def to_json(self):
         return {
@@ -119,15 +120,15 @@ class FunctionInfo():
                     self.id=int(item.split("id:")[-1])
                     id_name.add_id_name(self.id, self.name)
                 elif item.startswith("is_constructor:"):
-                    self.id=bool(item.split('is_constructor:')[-1])
+                    self.id=get_bool_value(item.split('is_constructor:')[-1])
                 elif item.startswith('functionSelector:'):
                     self.selector=item.split('functionSelector:')[-1]
                 elif item.startswith('implemented:'):
-                    self.implemented=bool(item.split('implemented:')[-1])
+                    self.implemented=get_bool_value(item.split('implemented:')[-1])
                 elif item.startswith('stateMutability:'):
                     self.stateMutability=item.split('stateMutability:')[-1]
                 elif item.startswith('virtual:'):
-                    self.virtual=bool(item.split('virtual')[-1])
+                    self.virtual=get_bool_value(item.split('virtual')[-1])
                 elif item.startswith('visibility:'):
                     self.visibility=item.split('visibility:')[-1]
                 elif item.startswith('modifier_name'):
@@ -215,22 +216,50 @@ class FunctionInfo():
                         else:
                             re_value += item
                     self.returnStatements.append(re_value)
-
+                elif items[0].startswith('conditional_expression:'):
+                    self.collect_conditional_expression(items,state_variables)
+                    # print(f'need to handle conditional expression')
+                elif items[0].startswith('while_statement:'):
+                    self.collect_condition(items,state_variables)
+                elif items[0].startswith('do_while_statement:'):
+                    self.collect_condition(items,state_variables)
                 else:
-                    print(f'check which is not handled in function.py')
+                    if '@@' in items[0]:
+                        node_type = str(items[0]).split("@@")[-1]
+                        name = str(items[0]).split("@@")[0]
+                        if node_type=='operator':
+                            """
+                                a case: unary operation
+                                delete@@operator
+                                set.index[value]@@IndexAccess                            
+                            """
+                            code=""
+                            for item in items:
+                                if '@@' in item:
+                                    item_ele = item.split("@@")
+                                    code += item_ele[0]+" "
+                                else:
+                                    code += item
+                            if name not in ['delete','++','--']:
+                                print(f'info: captured but not saved: {code} in funcion {self.name} in function.py\n')
+                    else:
+                        if len(component)==0:continue
+                        if str(component)=='----':continue
+                        print(f'info: check which is not handled in function.py\n')
 
             self.function_code=function_code_dict[self.name]
 
 
     def collect_local_variable(self,items):
-        v_names,v_value,function_calls=collect_local_variable_general(items)
+        v_names,v_value,function_calls,condi=collect_local_variable_general(items)
         if len(v_names)>0:
             for v_name in v_names:
                 self.local_variables[v_name]=v_value
         for call_name in function_calls:
             if call_name not in self.function_calls:
                 self.function_calls.append(call_name)
-
+        if condi not in self.branch_conditions:
+            self.branch_conditions.append(condi)
 
     def collect_condition(self, items:list,state_variables:list):
         condition,sv_read,function_calls=collect_condition_general(items,state_variables)
@@ -269,3 +298,15 @@ class FunctionInfo():
         for call_name in function_calls:
             if call_name not in self.function_calls:
                 self.function_calls.append(call_name)
+
+    def collect_conditional_expression(self,items:list,state_variables:list):
+        condition,epxre,sv_read,function_calls=collect_conditional_expression_general(items,state_variables)
+        if condition not in self.branch_conditions:
+            self.branch_conditions.append(condition)
+        for sv in sv_read:
+            if sv not in self.state_variables_read_in_BC:
+                self.state_variables_read_in_BC.append(sv)
+        for call_name in function_calls:
+            if call_name not in self.function_calls:
+                self.function_calls.append(call_name)
+        return epxre
